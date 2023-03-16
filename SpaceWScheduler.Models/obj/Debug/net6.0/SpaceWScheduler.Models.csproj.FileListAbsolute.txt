@@ -1,0 +1,12 @@
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\bin\Debug\net6.0\SpaceWScheduler.Models.deps.json
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\bin\Debug\net6.0\SpaceWScheduler.Models.dll
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\bin\Debug\net6.0\SpaceWScheduler.Models.pdb
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\SpaceWScheduler.Models.csproj.AssemblyReference.cache
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\SpaceWScheduler.Models.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\SpaceWScheduler.Models.AssemblyInfoInputs.cache
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\SpaceWScheduler.Models.AssemblyInfo.cs
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\SpaceWScheduler.Models.csproj.CoreCompileInputs.cache
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\SpaceWScheduler.Models.dll
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\refint\SpaceWScheduler.Models.dll
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\SpaceWScheduler.Models.pdb
+C:\Users\Wyatt\source\repos\SpaceWScheduler\SpaceWScheduler.Models\obj\Debug\net6.0\ref\SpaceWScheduler.Models.dll

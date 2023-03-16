@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "SpaceWScheduler.Services/1.0.0": {
+        "dependencies": {
+          "SpaceWScheduler.Models": "1.0.0"
+        },
+        "runtime": {
+          "SpaceWScheduler.Services.dll": {}
+        }
+      },
+      "SpaceWScheduler.Models/1.0.0": {
+        "runtime": {
+          "SpaceWScheduler.Models.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SpaceWScheduler.Services/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SpaceWScheduler.Models/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
