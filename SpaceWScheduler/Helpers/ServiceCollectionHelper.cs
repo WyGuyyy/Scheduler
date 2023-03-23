@@ -11,10 +11,11 @@ namespace SpaceWScheduler.Models.Helpers
 {
     public static class ServiceCollectionHelper
     {
-        public static IServiceCollection AddUserDefinedServices(this IServiceCollection serviceCollection) 
+        public static IServiceCollection AddUserDefinedServices(this IServiceCollection serviceCollection)
         {
             serviceCollection
                 .AddScheduleGetter()
+                .AddSchedulerUpdater()
                 .AddMockDB();
             
             return serviceCollection;
@@ -23,6 +24,12 @@ namespace SpaceWScheduler.Models.Helpers
         public static IServiceCollection AddScheduleGetter(this IServiceCollection serviceCollection) 
         {
             serviceCollection.AddScoped<IScheduleGetter, ScheduleGetter>();
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddSchedulerUpdater(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<IScheduleUpdater, ScheduleUpdater>();
             return serviceCollection;
         }
 
