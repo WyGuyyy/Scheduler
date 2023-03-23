@@ -14,7 +14,7 @@ namespace SpaceWScheduler.Services.Services
 
         public MockDB() {
             MOCK_SCHEDULE_DB = new Dictionary<int, Schedule>();
-            MOCK_SCHEDULE_DB.Add(1, new Schedule(idCounter, DateTime.Now.Date, DateTime.Now.Date.AddHours(8), "Example Schedule"));
+            MOCK_SCHEDULE_DB.Add(1, new Schedule { ID = idCounter, StartTime = DateTime.Now.Date, EndTime = DateTime.Now.Date.AddHours(8), Name = "Example Schedule" });
             idCounter++;
         }
 
@@ -27,7 +27,7 @@ namespace SpaceWScheduler.Services.Services
             // violated with this new Schedule addition, throw an exception.
             foreach (Schedule s in MOCK_SCHEDULE_DB.Values) 
             {
-                if (s.StartTime.Date.CompareTo(schedule.StartTime.Date) == 0 &&
+                if (s.StartTime?.Date.CompareTo(schedule.StartTime?.Date) == 0 &&
                     s.Name.Equals(schedule.Name)) {
                     throw new Exception("Identical schedule already exists.");
                 }    
@@ -44,8 +44,7 @@ namespace SpaceWScheduler.Services.Services
 
             foreach (Schedule s in MOCK_SCHEDULE_DB.Values) 
             {
-                if (s.StartTime.Date.CompareTo(schedule.StartTime.Date) == 0 &&
-                    s.Name.Equals(schedule.Name))
+                if (s.ID == schedule.ID)
                 {
                     attachedSchedule = s;
                     break;
@@ -58,6 +57,7 @@ namespace SpaceWScheduler.Services.Services
             }
 
             schedule.FillEmptyFields(attachedSchedule);
+            MOCK_SCHEDULE_DB.Remove(schedule.ID);
             MOCK_SCHEDULE_DB.Add(idCounter, schedule);
             incrementCounter();
         }
@@ -77,9 +77,7 @@ namespace SpaceWScheduler.Services.Services
 
         /// <inheritdoc/>
         public Schedule? GetScheduleById(int id) =>
-            MOCK_SCHEDULE_DB.ContainsKey(id) ?
-            MOCK_SCHEDULE_DB[id] :
-            default;
+            MOCK_SCHEDULE_DB.Values.FirstOrDefault(s => s.ID == id);
 
         /// <inheritdoc/>
         public IEnumerable<Schedule> GetSchedulesByDate(DateTime date) {
@@ -88,7 +86,7 @@ namespace SpaceWScheduler.Services.Services
 
             foreach (Schedule s in MOCK_SCHEDULE_DB.Values)
             {
-                if (s.StartTime.Date.CompareTo(date.Date) == 0)
+                if (s.StartTime?.Date.CompareTo(date.Date) == 0)
                 {
                     result.Add(s);
                 }
