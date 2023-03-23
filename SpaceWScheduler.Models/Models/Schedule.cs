@@ -13,13 +13,13 @@ namespace SpaceWScheduler.Models.Models
         public int ID { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        [CustomConverter]
         public string Name { get; set; }
 
-        public Schedule(int id, DateTime start, DateTime end, string name) {
+        [JsonConstructor]
+        public Schedule(int id, DateTime starttime, DateTime endtime, string name) {
             ID = id;
-            StartTime = start;
-            EndTime = end;
+            StartTime = starttime;
+            EndTime = endtime;
             Name = name;
         }
 
