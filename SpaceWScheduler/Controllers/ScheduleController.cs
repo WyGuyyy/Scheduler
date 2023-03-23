@@ -31,7 +31,7 @@ namespace SpaceWScheduler.Controllers
         [HttpGet]
         [Route("{scheduleId}")]
         public ActionResult<Schedule?> GetSchedule(int scheduleId) =>
-            _scheduleGetter.GetSchedule(scheduleId);
+            Ok(_scheduleGetter.GetSchedule(scheduleId));
 
         [HttpGet]
         [Route("date/{date}")]
@@ -46,12 +46,12 @@ namespace SpaceWScheduler.Controllers
             return CreatedAtAction(nameof(GetSchedule), new { scheduleId = "" + schedule.ID }, schedule);
         }
 
-       /* [HttpPut]
+        [HttpPut]
         [Route("update")]
         public ActionResult UpdateSchedule([FromBody] Schedule schedule)
         {
             _scheduleUpdater.UpdateSchedule(schedule);
-            return Upate(nameof(CreateSchedule));
+            return CreatedAtAction(nameof(GetSchedule), new { scheduleId = "" + schedule.ID }, schedule);
         }
 
         [HttpDelete]
@@ -59,7 +59,7 @@ namespace SpaceWScheduler.Controllers
         public ActionResult DeleteSchedule([FromRoute] int scheduleId)
         {
             _scheduleUpdater.DeleteSchedule(scheduleId);
-            return CreatedAtAction(nameof(GetSchedule));
-        }*/
+            return NoContent();
+        }
     }
 }
