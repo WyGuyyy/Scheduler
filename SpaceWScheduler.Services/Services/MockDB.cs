@@ -1,12 +1,6 @@
 ﻿using SpaceWScheduler.Models.Helpers;
 using SpaceWScheduler.Models.Models;
 using SpaceWScheduler.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpaceWScheduler.Services.Services
 {
@@ -24,6 +18,7 @@ namespace SpaceWScheduler.Services.Services
             idCounter++;
         }
 
+        #region Public Methods
         /// <inheritdoc/>
         public void AddSchedule(Schedule schedule)
         {
@@ -45,7 +40,7 @@ namespace SpaceWScheduler.Services.Services
         /// <inheritdoc/>
         public void UpdateSchedule(Schedule schedule)
         {
-            Schedule attachedSchedule = default;
+            Schedule? attachedSchedule = default;
 
             foreach (Schedule s in MOCK_SCHEDULE_DB.Values) 
             {
@@ -77,19 +72,35 @@ namespace SpaceWScheduler.Services.Services
             MOCK_SCHEDULE_DB.Remove(id);
         }
 
-        private void incrementCounter() => idCounter++;
-
-        public IEnumerable<Schedule> QuerySchedules(PropertyInfo prop, object value)
-        {
-            
-            Type type = Nullable.GetUnderlyingType(prop.GetType()) ?? prop.GetType();
-            Converter converter = new Converter();
-            converter.Convert<prop.GetType()., value.GetType() > (value);
-            var safeValue = (value == null) ? null : (ValueType)Convert.ChangeType(value, type);
-
-        }
-
+        /// <inheritdoc/>
         public IEnumerable<Schedule> GetAllSchedules() => MOCK_SCHEDULE_DB.Values;
+
+        /// <inheritdoc/>
+        public Schedule? GetScheduleById(int id) =>
+            MOCK_SCHEDULE_DB.ContainsKey(id) ?
+            MOCK_SCHEDULE_DB[id] :
+            default;
+
+        /// <inheritdoc/>
+        public IEnumerable<Schedule> GetSchedulesByDate(DateTime date) {
+
+            IList<Schedule> result = new List<Schedule>();
+
+            foreach (Schedule s in MOCK_SCHEDULE_DB.Values)
+            {
+                if (s.StartTime.Date.CompareTo(date.Date) == 0)
+                {
+                    result.Add(s);
+                }
+            }
+
+            return result;
+        }
+        #endregion Public Methods
+
+        #region Private Methods
+        private void incrementCounter() => idCounter++;
+        #endregion Private Methods
     }
 }
 

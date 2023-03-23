@@ -29,16 +29,24 @@ namespace SpaceWScheduler.Services.Interfaces
         public void DeleteSchedule(int id);
 
         /// <summary>
-        /// Query <see cref="Schedule"/> based on some <see cref="PropertyInfo"/> parameter and value
+        /// Get all schedules from the database.
         /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Schedule> QuerySchedules<ValueType>(PropertyInfo prop, ValueType value);
+        /// <returns><see cref="IEnumerable{Schedule}"/> contains all of the schedules currently in the database</returns>
+        public IEnumerable<Schedule> GetAllSchedules();
 
         /// <summary>
-        /// 
+        /// Get a <see cref="Schedule"/> with an id matching <paramref name="id"/>
         /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Schedule> GetAllSchedules();
+        /// <param name="id">The id of the schedule to be fetched</param>
+        /// <returns>A <see cref="Schedule"/> with an id matching <paramref name="id"/>. If no matching id is found, return <see cref="default"/></returns>
+        public Schedule? GetScheduleById(int id);
+
+        /// <summary>
+        /// Get all schedules from the database for a specific date.
+        /// </summary>
+        /// <param name="date">The date for which to fetch <see cref="Schedule"/> instances</param>
+        /// <returns><see cref="IEnumerable{Schedule}"/> containing all of the schedules for a specific <see cref="DateTime"/> <paramref name="date"/></returns>
+        public IEnumerable<Schedule> GetSchedulesByDate(DateTime date);
 
     }
 }
