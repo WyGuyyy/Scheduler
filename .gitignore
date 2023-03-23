@@ -1,3 +1,4 @@
 # Tell git to ignore the following folders
 .vs
 obj
+bin
