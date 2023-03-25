@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SpaceWScheduler.Models.Models;
 using SpaceWScheduler.Services.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace SpaceWScheduler.Controllers
 {
@@ -13,6 +14,7 @@ namespace SpaceWScheduler.Controllers
         private readonly IScheduleGetter _scheduleGetter;
         private readonly IScheduleUpdater _scheduleUpdater;
 
+        // NEED TO ENSURE THAT EVENT LIST IS POPULATED TO SCHEDULES!!!
         public ScheduleController(
             ILogger<ScheduleController> logger,
             IScheduleGetter scheduleGetter,
@@ -40,16 +42,18 @@ namespace SpaceWScheduler.Controllers
 
         [HttpPost]
         [Route("create")]
-        public ActionResult CreateSchedule([FromBody] Schedule schedule)
+        public ActionResult CreateSchedule([FromBody] ScheduleCreateModel scm)
         {
+            Schedule schedule = convertScheduleCreateModelToSchedule(scm);
             _scheduleUpdater.AddSchedule(schedule);
             return CreatedAtAction(nameof(GetSchedule), new { scheduleId = "" + schedule.ID }, schedule);
         }
 
         [HttpPut]
         [Route("update")]
-        public ActionResult UpdateSchedule([FromBody] Schedule schedule)
+        public ActionResult UpdateSchedule([FromBody] ScheduleCreateModel scm)
         {
+            Schedule schedule = convertScheduleCreateModelToSchedule(scm);
             _scheduleUpdater.UpdateSchedule(schedule);
             return CreatedAtAction(nameof(GetSchedule), new { scheduleId = "" + schedule.ID }, schedule);
         }
@@ -60,6 +64,22 @@ namespace SpaceWScheduler.Controllers
         {
             _scheduleUpdater.DeleteSchedule(scheduleId);
             return NoContent();
+        }
+
+        private Schedule convertScheduleCreateModelToSchedule(ScheduleCreateModel scm) =>
+            new Schedule { ID = scm.ID, StartTime = scm.StartTime, EndTime = scm.EndTime, Name = scm.Name };
+
+        /// <summary>
+        /// Class to restrict the properties able to be set for schedules via the api interface directly
+        /// </summary>
+        public class ScheduleCreateModel {
+            public int ID { get; set; }
+            public DateTime? StartTime { get; set; }
+            public DateTime? EndTime { get; set; }
+            public string? Name { get; set; }
+
+            [JsonConstructor]
+            public ScheduleCreateModel() { }
         }
     }
 }
