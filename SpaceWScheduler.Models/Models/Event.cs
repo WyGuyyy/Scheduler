@@ -2,26 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SpaceWScheduler.Models.Models
 {
     public class Event
     {
-        public DateTime StartTime;
-        public DateTime EndTime;
-        public string Name;
+        public int ID { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public string? Name { get; set; }
+        public Schedule? Schedule { get; set; }
 
-        public Event() {
-            Name = "";
-            StartTime = DateTime.Now;
-            EndTime = StartTime.AddHours(1);
-        }
-
-        public Event(DateTime start, DateTime end, string name) {
-            StartTime = start;
-            EndTime = end;
-            Name = name;
-        }
+        [JsonConstructor]
+        public Event() { }
     }
 }
