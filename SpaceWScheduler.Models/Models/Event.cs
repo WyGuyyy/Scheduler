@@ -13,7 +13,7 @@ namespace SpaceWScheduler.Models.Models
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public string? Name { get; set; }
-        public Schedule? Schedule { get; set; }
+        public int ScheduleId { get; set; }
 
         [JsonConstructor]
         public Event() { }

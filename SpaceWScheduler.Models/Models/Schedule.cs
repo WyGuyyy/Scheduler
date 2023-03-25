@@ -14,7 +14,7 @@ namespace SpaceWScheduler.Models.Models
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public string? Name { get; set; }
-        public IEnumerable<Event>? Events { get; set; }
+        public IList<Event>? Events { get; set; }
 
         [JsonConstructor]
         public Schedule() { }
