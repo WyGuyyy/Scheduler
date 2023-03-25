@@ -16,7 +16,8 @@ namespace SpaceWScheduler.Models.Helpers
         /// </summary>
         /// <param name="schedule">The <see cref="Schedule"/> object to that will have its empty properties filled</param>
         /// <param name="attachedSchedule">The attached <see cref="Schedule"/> used to fill the empty properties of <paramref name="schedule"/></param>
-        public static void FillEmptyFields(this Schedule schedule, Schedule attachedSchedule) 
+        public static void FillEmptyFields<T>(this T schedule, T attachedSchedule)
+            where T : class
         {
 
             if (attachedSchedule == default) 
