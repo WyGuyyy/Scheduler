@@ -20,10 +20,13 @@ namespace SpaceWScheduler.Services.Services
             {
                 { 1, new Schedule { ID = 1, StartTime = DateTime.Now.Date, EndTime = DateTime.Now.Date.AddHours(8), Name = "Example Schedule" } }
             };
+            incrementScheduleCounter();
+
             MOCK_EVENT_DB = new Dictionary<int, Event>
             {
-                { 1, new Event { ID = 1, StartTime = DateTime.Now.Date, EndTime = DateTime.Now.Date.AddHours(1), Name = "Example Event", Schedule = MOCK_SCHEDULE_DB[1] } }
+                { 1, new Event { ID = 1, StartTime = DateTime.Now.Date, EndTime = DateTime.Now.Date.AddHours(1), Name = "Example Event", ScheduleId = MOCK_SCHEDULE_DB[1].ID } }
             };
+            incrementEventCounter();
         }
 
         #region Public Methods
@@ -112,10 +115,10 @@ namespace SpaceWScheduler.Services.Services
             // violated with this new Event addition, throw an exception.
             foreach (Event e in MOCK_EVENT_DB.Values)
             {
-                if (e.StartTime?.Date.CompareTo(Event.StartTime?.Date) == 0 &&
-                    e.Schedule?.ID == Event.Schedule?.ID)
+                if (eventsOverlap(e, Event) &&
+                    e.ScheduleId == Event.ScheduleId)
                 {
-                    throw new Exception("Identical event already exists.");
+                    throw new Exception($"Overlapping Event for Schedule with ID {Event.ScheduleId} was detected. Events for a single schedule cannot overlap.");
                 }
             }
 
@@ -144,10 +147,17 @@ namespace SpaceWScheduler.Services.Services
                 return;
             }
 
+            // Check that Event overlap rules are not violated
+            foreach (Event e in MOCK_EVENT_DB.Values) {
+                if (e.ID != Event.ID && e.ScheduleId == Event.ScheduleId &&
+                    eventsOverlap(e, Event)) {
+                    throw new Exception($"Overlapping Event for Schedule with ID {Event.ScheduleId} was detected. Events for a single schedule cannot overlap.");
+                } 
+            }
+
             Event.FillEmptyFields(attachedEvent);
             MOCK_EVENT_DB.Remove(Event.ID);
-            MOCK_EVENT_DB.Add(scheduleIdCounter, Event);
-            incrementEventCounter();
+            MOCK_EVENT_DB.Add(Event.ID, Event);
         }
 
         /// <inheritdoc/>
@@ -174,7 +184,7 @@ namespace SpaceWScheduler.Services.Services
             IList<Event> result = new List<Event>();
 
             foreach (Event e in MOCK_EVENT_DB.Values) {
-                if (e.Schedule?.ID == schedule.ID) {
+                if (e.ScheduleId == schedule.ID) {
                     result.Add(e);
                 }
             }
@@ -185,7 +195,15 @@ namespace SpaceWScheduler.Services.Services
 
         #region Private Methods
         private void incrementScheduleCounter() => scheduleIdCounter++;
+
         private void incrementEventCounter() => eventIDCounter++;
+
+        private bool eventsOverlap(Event e1, Event e2) =>
+            
+            (e1.StartTime?.Date.CompareTo(e2.StartTime?.Date) == 0 &&
+            e1.StartTime?.TimeOfDay.CompareTo(e2.EndTime?.TimeOfDay) == -1) &&
+            (e1.EndTime?.Date.CompareTo(e2.EndTime?.Date) == 0 &&
+            e1.EndTime?.TimeOfDay.CompareTo(e2.StartTime?.TimeOfDay) == 1);
         #endregion Private Methods
     }
 }
