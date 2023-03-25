@@ -35,6 +35,27 @@ namespace SpaceWScheduler.Controllers
         public ActionResult<Event?> GetEvent([FromRoute] int eventId) =>
             _eventGetter.GetEvent(eventId);
 
+        [HttpPost]
+        [Route("create")]
+        public ActionResult CreateEvent([FromBody] Event Event)
+        {
+            _eventUpdater.AddEvent(Event);
+            return CreatedAtAction(nameof(GetEvent), new { EventId = Event.ID }, Event);
+        }
 
+        [HttpPut]
+        [Route("update")]
+        public ActionResult UpdateEvent([FromBody] Event Event)
+        {
+            _eventUpdater.UpdateEvent(Event);
+            return CreatedAtAction(nameof(GetEvent), new { eventId = Event.ID }, Event);
+        }
+
+        [HttpDelete]
+        [Route("delete/{eventId}")]
+        public ActionResult DeleteEvent([FromRoute] int eventId) {
+            _eventUpdater.DeleteEvent(eventId);
+            return NoContent();
+        }
     }
 }
