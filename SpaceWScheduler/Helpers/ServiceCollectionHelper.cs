@@ -1,4 +1,5 @@
-﻿using SpaceWScheduler.Services.Interfaces;
+﻿using SpaceWScheduler.Models.Interfaces;
+using SpaceWScheduler.Services.Interfaces;
 using SpaceWScheduler.Services.Services;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace SpaceWScheduler.Models.Helpers
             serviceCollection
                 .AddScheduleGetter()
                 .AddSchedulerUpdater()
+                .AddEventGetter()
+                .AddEventUpdater()
                 .AddMockDB();
             
             return serviceCollection;
@@ -30,6 +33,18 @@ namespace SpaceWScheduler.Models.Helpers
         public static IServiceCollection AddSchedulerUpdater(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IScheduleUpdater, ScheduleUpdater>();
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddEventGetter(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<IEventGetter, EventGetter>();
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddEventUpdater(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<IEventUpdater, EventUpdater>();
             return serviceCollection;
         }
 
