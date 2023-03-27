@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Logging;
+using SpaceWScheduler.Models.Context;
 using SpaceWScheduler.Models.Interfaces;
 using SpaceWScheduler.Models.Models;
 using SpaceWScheduler.Services.Interfaces;
@@ -10,17 +13,17 @@ namespace SpaceWScheduler.Services.Services
     {
 
         private readonly ILogger<Event> _logger;
-        private readonly IMockDB _mockDB;
+        private readonly IDbContextFactory<SchedulerContext> _contextFactory;
         private readonly IScheduleGetter _scheduleGetter;
 
         public EventUpdater(
             ILogger<Event> logger,
-            IMockDB mockDB,
+            IDbContextFactory<SchedulerContext> contextFactory,
             IScheduleGetter scheduleGetter
         ) 
         { 
             _logger = logger;
-            _mockDB = mockDB;
+            _contextFactory = contextFactory;
             _scheduleGetter = scheduleGetter;
         }
 

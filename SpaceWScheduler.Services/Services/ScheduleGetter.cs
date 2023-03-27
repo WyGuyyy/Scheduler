@@ -1,4 +1,6 @@
-﻿using SpaceWScheduler.Models.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceWScheduler.Models.Context;
+using SpaceWScheduler.Models.Interfaces;
 using SpaceWScheduler.Models.Models;
 using SpaceWScheduler.Services.Interfaces;
 
@@ -7,46 +9,63 @@ namespace SpaceWScheduler.Services.Services
     public class ScheduleGetter : IScheduleGetter
     {
 
-        private readonly IMockDB _mockDB;
+        private readonly IDbContextFactory<SchedulerContext> _contextFactory;
         private readonly IEventGetter _eventGetter;
 
         public ScheduleGetter(
-            IMockDB mockDB,
+            IDbContextFactory<SchedulerContext> contextFactory,
             IEventGetter eventGetter
         )
         {
-            _mockDB = mockDB;
+            _contextFactory = contextFactory;
             _eventGetter = eventGetter;
         }
 
         /// <inheritdoc/>
-        public Schedule? GetSchedule(int id)
+        public async Task<Schedule?> GetSchedule(int id)
         {
-            Schedule? schedule = _mockDB.GetScheduleById(id);
+            Schedule? schedule = default;
 
-            // Populate the events for the schedule
-            if (schedule != default) {
-                schedule.Events = _eventGetter.GetEventsForSchedule(schedule).ToList();
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                schedule = await context.Schedules
+                    .Where(s => s.ID == id)
+                    .Include(s => s.Events)
+                    .FirstOrDefaultAsync();
             }
 
             return schedule;
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Schedule> GetSchedules()
+        public async Task<IEnumerable<Schedule>> GetSchedules()
         {
-            IEnumerable<Schedule> schedules = _mockDB.GetAllSchedules();
+            IEnumerable<Schedule> schedules;
 
-            // Populate the events for every schedule
-            foreach (Schedule s in schedules) {
-                s.Events = _eventGetter.GetEventsForSchedule(s).ToList();
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                schedules = await context.Schedules
+                    .Include(s => s.Events)
+                    .ToListAsync();
             }
 
             return schedules;
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Schedule> GetSchedulesByDate(DateTime date) =>
-            _mockDB.GetSchedulesByDate(date);
+        public async Task<IEnumerable<Schedule>> GetSchedulesByDate(DateTime date) 
+        {
+            IEnumerable<Schedule> result;
+
+            using (var context = _contextFactory.CreateDbContext()) 
+            {
+                result = await context.Schedules
+                    .Where(s => s.StartTime.HasValue && s.StartTime.Value.Date.CompareTo(date.Date) == 0)
+                    .Include(s => s.Events)
+                    .ToListAsync();
+            }
+
+            return result;
+        }
     }
 }

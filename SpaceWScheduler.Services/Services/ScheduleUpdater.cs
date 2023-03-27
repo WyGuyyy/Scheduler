@@ -1,4 +1,6 @@
-﻿using SpaceWScheduler.Models.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceWScheduler.Models.Context;
+using SpaceWScheduler.Models.Models;
 using SpaceWScheduler.Services.Interfaces;
 
 namespace SpaceWScheduler.Services.Services
@@ -6,11 +8,11 @@ namespace SpaceWScheduler.Services.Services
     public class ScheduleUpdater : IScheduleUpdater
     {
 
-        private readonly IMockDB _mockDB;
+        private readonly IDbContextFactory<SchedulerContext> _contextFactory;
 
-        public ScheduleUpdater(IMockDB mockDB) 
+        public ScheduleUpdater(IDbContextFactory<SchedulerContext> contextFactory)
         {
-            _mockDB = mockDB;
+            _contextFactory = contextFactory;
         }
 
         /// <inheritdoc/>
