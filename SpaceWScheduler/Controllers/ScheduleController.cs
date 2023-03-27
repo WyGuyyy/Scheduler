@@ -27,42 +27,42 @@ namespace SpaceWScheduler.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Schedule>> GetSchedules() =>
-            _scheduleGetter.GetSchedules().ToList();
+        public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules() =>
+           (await _scheduleGetter.GetSchedules()).ToList();
 
         [HttpGet]
         [Route("{scheduleId}")]
-        public ActionResult<Schedule?> GetSchedule(int scheduleId) =>
-            Ok(_scheduleGetter.GetSchedule(scheduleId));
+        public async Task<ActionResult<Schedule?>> GetSchedule(int scheduleId) =>
+            Ok(await _scheduleGetter.GetSchedule(scheduleId));
 
         [HttpGet]
         [Route("date/{date}")]
-        public ActionResult<IEnumerable<Schedule>> GetScheduleForDate(DateTime date) =>
-            _scheduleGetter.GetSchedulesByDate(date).ToList();
+        public async Task<ActionResult<IEnumerable<Schedule>>> GetScheduleForDate(DateTime date) =>
+            (await _scheduleGetter.GetSchedulesByDate(date)).ToList();
 
         [HttpPost]
         [Route("create")]
-        public ActionResult CreateSchedule([FromBody] ScheduleCreateModel scm)
+        public async Task<ActionResult> CreateSchedule([FromBody] ScheduleCreateModel scm)
         {
             Schedule schedule = convertScheduleCreateModelToSchedule(scm);
-            _scheduleUpdater.AddSchedule(schedule);
+            await _scheduleUpdater.AddSchedule(schedule);
             return CreatedAtAction(nameof(GetSchedule), new { scheduleId = "" + schedule.ID }, schedule);
         }
 
         [HttpPut]
         [Route("update")]
-        public ActionResult UpdateSchedule([FromBody] ScheduleCreateModel scm)
+        public async Task<ActionResult> UpdateSchedule([FromBody] ScheduleCreateModel scm)
         {
             Schedule schedule = convertScheduleCreateModelToSchedule(scm);
-            _scheduleUpdater.UpdateSchedule(schedule);
+            await _scheduleUpdater.UpdateSchedule(schedule);
             return CreatedAtAction(nameof(GetSchedule), new { scheduleId = "" + schedule.ID }, schedule);
         }
 
         [HttpDelete]
         [Route("delete/{scheduleId}")]
-        public ActionResult DeleteSchedule([FromRoute] int scheduleId)
+        public async Task<ActionResult> DeleteSchedule([FromRoute] int scheduleId)
         {
-            _scheduleUpdater.DeleteSchedule(scheduleId);
+            await _scheduleUpdater.DeleteSchedule(scheduleId);
             return NoContent();
         }
 

@@ -26,35 +26,35 @@ namespace SpaceWScheduler.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Event>> GetAllEvents() =>
-            _eventGetter.GetEvents().ToList();
+        public async Task<ActionResult<IEnumerable<Event>>> GetAllEvents() =>
+            (await _eventGetter.GetEvents()).ToList();
         
 
         [HttpGet]
         [Route("{eventId}")]
-        public ActionResult<Event?> GetEvent([FromRoute] int eventId) =>
-            _eventGetter.GetEvent(eventId);
+        public async Task<ActionResult<Event?>> GetEvent([FromRoute] int eventId) =>
+            await _eventGetter.GetEvent(eventId);
 
         [HttpPost]
         [Route("create")]
-        public ActionResult CreateEvent([FromBody] Event Event)
+        public async Task<ActionResult> CreateEvent([FromBody] Event Event)
         {
-            _eventUpdater.AddEvent(Event);
+            await _eventUpdater.AddEvent(Event);
             return CreatedAtAction(nameof(GetEvent), new { EventId = Event.ID }, Event);
         }
 
         [HttpPut]
         [Route("update")]
-        public ActionResult UpdateEvent([FromBody] Event Event)
+        public async Task<ActionResult> UpdateEvent([FromBody] Event Event)
         {
-            _eventUpdater.UpdateEvent(Event);
+            await _eventUpdater.UpdateEvent(Event);
             return CreatedAtAction(nameof(GetEvent), new { eventId = Event.ID }, Event);
         }
 
         [HttpDelete]
         [Route("delete/{eventId}")]
-        public ActionResult DeleteEvent([FromRoute] int eventId) {
-            _eventUpdater.DeleteEvent(eventId);
+        public async Task<ActionResult> DeleteEvent([FromRoute] int eventId) {
+            await _eventUpdater.DeleteEvent(eventId);
             return NoContent();
         }
     }

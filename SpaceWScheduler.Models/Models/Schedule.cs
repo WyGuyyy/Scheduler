@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpaceWScheduler.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SpaceWScheduler.Models.Models
 {
-    public class Schedule
+    public class Schedule : ISchedulerModel
     {
         public int ID { get; set; }
         public DateTime? StartTime { get; set; }

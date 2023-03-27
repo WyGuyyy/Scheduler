@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using SpaceWScheduler.Models.Context;
+using SpaceWScheduler.Models.Helpers;
 using SpaceWScheduler.Models.Interfaces;
 using SpaceWScheduler.Models.Models;
 using SpaceWScheduler.Services.Interfaces;
+using System.Data;
 
 namespace SpaceWScheduler.Services.Services
 {
@@ -30,53 +32,79 @@ namespace SpaceWScheduler.Services.Services
         #region Public Methods
 
         /// <inheritdoc/>
-        public void AddEvent(Event Event)
+        public async Task AddEvent(Event Event)
         {
-            try
-            {
-                if (!scheduleExists(Event.ScheduleId)) {
-                    throw new Exception("Cannot assign Event to Schedule that does not yet exist.");
-                }
+            if (!(await scheduleExists(Event.ScheduleId))) {
+                throw new Exception("Cannot assign Event to Schedule that does not yet exist.");
+            }
 
-                _mockDB.AddEvent(Event);
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine($"Error writing to database: {exc.Message}");
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void DeleteEvent(int id)
-        {
-            try
-            {
-                _mockDB.DeleteEvent(id);
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine($"Error writing to database: {exc.Message}");
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void UpdateEvent(Event Event)
-        {
-            try
-            {
-                if (!scheduleExists(Event.ScheduleId))
+            using (var context = _contextFactory.CreateDbContext()) {
+                if (await eventsOverlap(Event, context))
                 {
-                    throw new Exception("Cannot assign Event to Schedule that does not yet exist.");
+                    throw new Exception("This Event overlaps with another for the same Schedule.");
                 }
 
-                _mockDB.UpdateEvent(Event);
+                context.Add(Event);
+                int result = context.SaveChanges();
+
+                if (result < 1) {
+                    throw new Exception("Issue writing to the database to create new Event.");
+                }
             }
-            catch (Exception exc)
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteEvent(int id)
+        {
+            using (var context = _contextFactory.CreateDbContext()) {
+                Event? e = await context.Events
+                    .Where(e => e.ID == id)
+                    .FirstOrDefaultAsync();
+
+                if (e != default) { 
+                    context.Remove(e);
+                    int result = context.SaveChanges();
+
+                    if (result < 1) {
+                        throw new Exception($"Issue removing Event with ID {e.ID} from the database.");
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdateEvent(Event Event)
+        {
+            if (!(await scheduleExists(Event.ScheduleId)))
             {
-                Console.WriteLine($"Error writing to database: {exc.Message}");
-                throw;
+                throw new Exception("Cannot assign Event to Schedule that does not yet exist.");
+            }
+
+            using (var context = _contextFactory.CreateDbContext()) {
+
+                if (await eventsOverlap(Event, context))
+                {
+                    throw new Exception("This Event overlaps with another for the same Schedule.");
+                }
+
+                Event? attachedEvent = await context.Events
+                    .Where(e => e.ID == Event.ID)
+                    .FirstOrDefaultAsync();
+
+                if (attachedEvent == default) {
+                    await AddEvent(Event);
+                    return;
+                }
+
+                attachedEvent.ReplacePopulatedFields(Event);
+                context.Update(Event);
+                int result = context.SaveChanges();
+
+                if (result < 1)
+                {
+                    throw new Exception($"Issue writing to the database to update Event with ID {Event.ID}.");
+                }
+
             }
         }
 
@@ -84,8 +112,25 @@ namespace SpaceWScheduler.Services.Services
 
         #region Private Methods
 
-        private bool scheduleExists(int scheduleId) =>
-            _scheduleGetter.GetSchedule(scheduleId) != default;
+        private async Task<bool> scheduleExists(int scheduleId) =>
+            await _scheduleGetter.GetSchedule(scheduleId) != default;
+
+        private async Task<bool> eventsOverlap(Event Event, SchedulerContext context) 
+        {
+            Event? overlappingEvent = await context.Events
+                .Where(e =>
+                    e.ScheduleId == Event.ScheduleId && 
+                    e.StartTime.HasValue && e.EndTime.HasValue &&
+                    Event.StartTime.HasValue && Event.EndTime.HasValue &&
+                    e.StartTime.Value.Date.CompareTo(Event.StartTime.Value.Date) == 0 &&
+                    e.StartTime.Value.TimeOfDay.CompareTo(Event.EndTime.Value.TimeOfDay) == -1 &&
+                    e.EndTime.Value.Date.CompareTo(Event.EndTime.Value.Date) == 0 &&
+                    e.EndTime.Value.TimeOfDay.CompareTo(Event.StartTime.Value.TimeOfDay) == 1
+                )
+                .FirstOrDefaultAsync();
+
+            return overlappingEvent != null;
+        }
 
         #endregion Private Methods
     }
