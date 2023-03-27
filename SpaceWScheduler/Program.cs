@@ -1,6 +1,4 @@
 using SpaceWScheduler.Models.Helpers;
-using SpaceWScheduler.Services.Interfaces;
-using SpaceWScheduler.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddUserDefinedServices();
+builder.Services.AddUserDefinedServices(builder.Configuration);
 
 var app = builder.Build();
 

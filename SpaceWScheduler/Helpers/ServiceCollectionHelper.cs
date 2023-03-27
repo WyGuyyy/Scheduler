@@ -1,25 +1,22 @@
-﻿using SpaceWScheduler.Models.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SpaceWScheduler.Models.Context;
+using SpaceWScheduler.Models.Interfaces;
 using SpaceWScheduler.Services.Interfaces;
 using SpaceWScheduler.Services.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpaceWScheduler.Models.Helpers
 {
     public static class ServiceCollectionHelper
     {
-        public static IServiceCollection AddUserDefinedServices(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddUserDefinedServices(this IServiceCollection serviceCollection, IConfiguration config)
         {
             serviceCollection
                 .AddScheduleGetter()
                 .AddSchedulerUpdater()
                 .AddEventGetter()
                 .AddEventUpdater()
-                .AddMockDB();
+                .AddSchedulerDb(config);
+                //.AddMockDB();
             
             return serviceCollection;
         }
@@ -48,10 +45,18 @@ namespace SpaceWScheduler.Models.Helpers
             return serviceCollection;
         }
 
-        public static IServiceCollection AddMockDB(this IServiceCollection serviceCollection) 
+        public static IServiceCollection AddSchedulerDb(this IServiceCollection serviceCollection, IConfiguration config) 
+        {
+            serviceCollection.AddDbContextFactory<SchedulerContext>(
+                options => options.UseSqlite(config.GetConnectionString("SchedulerDBContext"))
+            );
+            return serviceCollection;
+        }
+
+        /*public static IServiceCollection AddMockDB(this IServiceCollection serviceCollection) 
         {
             serviceCollection.AddSingleton<IMockDB, MockDB>();
             return serviceCollection;
-        }
+        }*/
     }
 }
