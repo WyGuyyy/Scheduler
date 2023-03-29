@@ -88,6 +88,7 @@ namespace SpaceWScheduler.Services.Services
                 }
 
                 Event? attachedEvent = await context.Events
+                    .AsNoTracking()
                     .Where(e => e.ID == Event.ID)
                     .FirstOrDefaultAsync();
 
@@ -118,6 +119,7 @@ namespace SpaceWScheduler.Services.Services
         private async Task<bool> eventsOverlap(Event Event, SchedulerContext context) 
         {
             Event? overlappingEvent = await context.Events
+                .AsNoTracking()
                 .Where(e =>
                     e.ScheduleId == Event.ScheduleId && 
                     e.StartTime.HasValue && e.EndTime.HasValue &&
